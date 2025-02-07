@@ -1,9 +1,16 @@
+# 소수면 True
+# 자연수면 False
+
 def check_prime_num(x):
     if x <= 1: 
-        return False
+      print('소수가 아닙니다.')
+      return False
+        
     for i in range(2, x):
-        if x % i == 0:
-            return False
+      if x % i == 0:
+        print('소수가 아닙니다.')
+        return False
+    print('소수입니다.')   
     return True
 
 number = int(input('판별할 자연수를 입력하세요:'))
