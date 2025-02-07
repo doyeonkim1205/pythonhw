@@ -1,3 +1,86 @@
+import pandas as pd
+
+a = pd.Series([1, 2, 3, 4])
+print(a)
+
+b = pd.Series([1, 2, 3], index = ['a', 'b', 'c'])
+print(b)
+
+list1 = list([['한빛', '남자', '20', '180'],
+              ['한결', '남자', '21', '177'],
+              ['한라', '여자', '20', '160']])
+col_names = ['이름', '성별', '나이', '키']
+
+pd.DataFrame(list1, columns = col_names).to_excel('test.xlsx', index = False)
+pd.DataFrame(list1, columns = col_names).to_csv('test.csv', index = False)
+
+dict1 = {'이름':{0:'한빛', 1:'한결', 2:'한라'},
+         '성별':{0:'남자', 1:'남자', 2:'여자'},
+         '나이':{0:'20', 1:'21', 2:'20'},
+         '키':{0:'180', 1:'177', 2:'160'}}
+
+pd.DataFrame(dict1).to_csv('test2.csv', index = False)
+pd.DataFrame(dict1).to_excel('test2.xlsx', index = False)
+
+import numpy as np
+
+arr1 = np.array([['한빛', '남자', '20', '180'],
+                 ['한결', '남자', '21', '177'],
+                 ['한라', '여자', '20', '160']])
+
+col_names = ['이름', '성별', '나이', '키']
+pd.DataFrame(arr1, columns = col_names).to_excel('test3.xlsx', index = False)
+pd.DataFrame(arr1, columns = col_names).to_csv('test3.csv', index = False)
+
+from google.colab import files
+
+# 파일 업로드 함수 호출하기
+f = files.upload()
+
+import pandas as pd
+
+df = pd.read_excel('./gni.xlsx')
+print(df.columns)
+
+gni = []
+for i in range(0, len(df)):
+  gni.append(list(df.loc[i]))
+print(gni)
+
+import pandas as pd
+
+# 2차원 배열 불러오기
+data = []
+
+df =  pd.read_csv('./test.csv', encoding='utf8')  # cp949가 안되면 utf8로 바꾼다
+#print(df.columns)
+
+
+# 리스트에 값 추가하기
+for i in range(len(df)):   # df의 행 개수만큼 반복
+  data.append(list(df.loc[i]) + [i])  # loc : 특정행이나 열을 선택하기 위해 사용하는 속성
+#print(data)
+
+# 데이터프레임 생성하기
+cols = list(df.columns)
+cols.append('비고')
+#print(cols)
+
+pd.DataFrame(data, columns = cols).to_csv('test.csv', index = False)
+
+# 키의 최소값, 최대값, 평균, 표준편차
+import numpy as np
+
+height = []
+for i in range(0, len(df)):
+  height.append(int(df.loc[i][3]))
+
+import numpy as np
+print(np.min(height))
+print(np.max(height))
+print(np.average(height))
+print(np.std(height))
+
 df.describe()  # 통계정보가 출력된다.
 
 df.head(3)
