@@ -1,0 +1,28 @@
+void main()   
+// void는 반환값이 없다. 만약 int main()가 되면 int로 반환.
+// int main()이 표준이며, return 0;을 사용하여 프로그램이 정상 종료되었음을 알려주는 것이 좋다!
+{
+    int A = 0;
+    int B = 0;
+    int result = 0;
+    
+    printf("정수를 입력하시오: \n");
+    scanf("%d", &A);
+    scanf("%d", &B);
+    
+    if (A % B == 0) {
+        result = A / B;
+        printf("%d", result);
+        
+    } else if (A < B) {
+        result = A + B;
+        printf("%d", result);
+        
+    } else if (A > B && A / B != 0) {
+        result = A % B;
+        printf("%d", result);
+        
+    } else { 
+        printf("%d %d", A, B);
+    }
+}

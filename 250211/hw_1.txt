@@ -1,0 +1,25 @@
+void main()   
+// void는 반환값이 없다. 만약 int main()가 되면 int로 반환.
+// int main()이 표준이며, return 0;을 사용하여 프로그램이 정상 종료되었음을 알려주는 것이 좋다!
+{
+    int A = 0;
+
+    printf("숫자를 입력하시오:");
+    scanf("%d", &A);
+
+    int Aaa = A / 100;
+    int aAa = (A / 10) % 10;
+    int aaA = A % 10;
+    
+    if (A < 0 || A >= 1000 ) {
+        printf("0부터 999까지만 입력하시오.");
+    } else {
+        if (A % 3 == 0 && A % 2 == 1) {
+            printf("특별한 숫자다1.");
+        } else if ((Aaa + aAa + aaA) % 7 == 0) {
+            printf("특별한 숫자다2.");
+        } else if (Aaa > aaA) {
+            printf("특별한 숫자다3.");
+        }
+    }
+}
