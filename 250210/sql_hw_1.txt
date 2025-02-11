@@ -1,0 +1,30 @@
+create database class;
+use class;
+show tables;
+
+create table student(
+    student_id int(3) auto_increment primary key,  
+    name char(10) not null,
+    age int(3) not null,  
+    grade char(10) not null
+);
+
+desc student;
+
+insert into student (name, age, grade) values ('Alice', 20, 'A');
+insert into student (name, age, grade) values ('Bob', 22, 'B');
+insert into student (name, age, grade) values ('Charlie', 21, 'A');
+insert into student (name, age, grade) values ('Dave', 23, 'C');
+
+select * from student;
+
+update student set age = 22 where name = 'Charlie';
+select * from student;
+
+select name, age from student where grade = 'A';
+
+delete from student where name = 'Dave';
+select * from student;
+
+insert into student (name, age, grade) values ('Eve', 24, 'B');
+select * from student;
