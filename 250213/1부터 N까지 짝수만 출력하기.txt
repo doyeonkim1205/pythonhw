@@ -1,6 +1,7 @@
 void main() 
 {
-    int i, n = 0; 
+    int i = 0; 
+    int n = 0; 
     
     printf("숫자를 입력하시오\n");
     scanf("%d", &i);
