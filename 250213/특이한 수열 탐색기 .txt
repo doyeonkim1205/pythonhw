@@ -5,19 +5,18 @@ void main()
     printf("숫자 2개를 입력하시오\n");
     scanf("%d%d", &M, &N);
     
-    for (int i = M; i <= N; i++) {
-        
+    for (int i = M; i <= N; i++) {     
         int flag = 0;   // false        
         for (int j = i; j > 0; j /= 10) {
             if (j % 10 == 7) {
                 flag = 1;   // true
                 break;
             }
-
-        } if (i % 7 == 0 || flag) {
-            continue;
-        
-        } else if (i % 5 == 0) {
+        } 
+        if (i % 7 == 0 || flag) {
+            continue;        
+        }
+        if (i % 5 == 0) {
             printf("%d ", i);
             break;
         } 
