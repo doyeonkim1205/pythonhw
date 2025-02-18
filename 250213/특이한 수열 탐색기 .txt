@@ -7,8 +7,7 @@ void main()
     
     for (int i = M; i <= N; i++) {
         
-        int flag = 0;   // false
-        
+        int flag = 0;   // false        
         for (int j = i; j > 0; j /= 10) {
             if (j % 10 == 7) {
                 flag = 1;   // true
@@ -22,7 +21,6 @@ void main()
             printf("%d ", i);
             break;
         } 
-
         printf("%d ", i);
     }
 }
