@@ -1,0 +1,38 @@
+#include <stdio.h>
+
+int main() {
+    int a[5];  
+    int i, j, minIdx, temp;
+
+    printf("5개의 정수를 입력하세요: ");
+    for (i = 0; i < 5; i++) {
+        scanf("%d", &a[i]);
+    }
+
+    for (i = 0; i < 4; i++) {  
+        minIdx = i;  
+
+        // 최소값 찾기
+        for (j = i + 1; j < 5; j++) {
+            if (a[j] < a[minIdx]) {  
+                minIdx = j;  
+            }
+        }
+        // 값 교환 (swap)
+        temp = a[i];
+        a[i] = a[minIdx];
+        a[minIdx] = temp;
+
+        printf("%d회차: ", i + 1);
+        for (int k = 0; k < 5; k++) {
+            printf("%d ", a[k]);
+        }
+        printf("\n");
+    }
+
+    printf("정렬된 배열: ");
+    for (i = 0; i < 5; i++) {
+        printf("%d ", a[i]);
+    }
+    return 0;
+}

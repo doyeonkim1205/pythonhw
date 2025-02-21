@@ -1,0 +1,25 @@
+#include <stdio.h>
+
+int main()
+{
+    union A {
+        int intVal;
+        float floatVal;
+        char charVal[10];
+    };
+    
+    union A a;
+    
+    printf("정수 입력: ");
+    scanf("%d", &a.intVal);
+    printf("%d %d\n", a.intVal, &a.intVal);
+    
+    printf("실수 입력: ");
+    scanf("%f", &a.floatVal);
+    printf("%.2f %d\n", a.floatVal, &a.floatVal);
+    
+    printf("문자 입력: ");
+    getchar();
+    scanf("%c", &a.charVal[0]);
+    printf("%c %d", a.charVal[0], &a.charVal);
+}

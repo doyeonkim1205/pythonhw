@@ -1,0 +1,59 @@
+#include <stdio.h>
+
+enum CarType {
+    SEDAN = 1,
+    SUV = 2,
+    TRUCK = 3,
+    VAN = 4
+};
+
+int main() {
+    int choice;
+
+    char *sedanModels[] = {"Sonata", "Avante", "K5", "SM6", "Grandeur"};
+    char *suvModels[] = {"Tucson", "Sorento", "SantaFe", "Xm3", "Qm6"};
+    char *truckModels[] = {"Porter", "Bongo", "Fordranger", "F-150", "Rexton"};
+    char *vanModels[] = {"Carnival", "Staria", "Vito", "Sprinter", "Odyssey"};
+
+    printf("자동차 종류를 선택하시오:\n");
+    printf("1: SEDAN\n2: SUV\n3: TRUCK\n4: VAN\n");
+
+    printf("\n선택(숫자를 입력하시오): ");
+    scanf("%d", &choice);
+
+
+    switch (choice) {
+        case SEDAN:
+            printf("\n선택한 자동차 종류: SEDAN\n\n");
+            printf("가능한 모델 목록\n");
+            for (int i = 0; i < 5; i++) {
+                printf("%s\n", sedanModels[i]);
+            }
+            break;
+        case SUV:
+            printf("\n선택한 자동차 종류: SUV\n\n");
+            printf("가능한 모델 목록\n");
+            for (int i = 0; i < 5; i++) {
+                printf("%s\n", suvModels[i]);
+            }
+            break;
+        case TRUCK:
+            printf("\n선택한 자동차 종류: TRUCK\n\n");
+            printf("가능한 모델 목록\n");
+            for (int i = 0; i < 5; i++) {
+                printf("%s\n", truckModels[i]);
+            }
+            break;
+        case VAN:
+            printf("\n선택한 자동차 종류: VAN\n\n");
+            printf("> 가능한 모델 목록\n");
+            for (int i = 0; i < 5; i++) {
+                printf("%s\n", vanModels[i]);
+            }
+            break;
+        default:
+            printf("\n잘못된 입력입니다. 1~4 사이의 숫자를 입력하시오.\n");
+    }
+
+    return 0;
+}
