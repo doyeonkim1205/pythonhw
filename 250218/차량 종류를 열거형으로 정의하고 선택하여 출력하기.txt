@@ -2,9 +2,9 @@
 
 enum CarType {
     SEDAN = 1,
-    SUV = 2,
-    TRUCK = 3,
-    VAN = 4
+    SUV,
+    TRUCK,
+    VAN
 };
 
 int main() {
