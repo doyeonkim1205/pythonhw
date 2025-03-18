@@ -1,0 +1,37 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+
+df = pd.read_csv('대전.csv', encoding='cp949')
+df.info()
+
+df.columns = df.columns.str.strip().str.replace(" ", "").str.replace("\n", "")
+
+# 결측치 채우기
+df2 = df.ffill()  # fillna(method='ffill') 대신 사용
+
+# 컬럼명 변경 (한글 → 영어)
+df2.rename(columns={'최고기온(℃)': 'max_temp', '최저기온(℃)': 'min_temp', '평균기온(℃)': 'avg_temp'}, inplace=True)
+
+# 한글 폰트 설정
+font_path = "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"
+font_prop = fm.FontProperties(fname=font_path)
+plt.rc('font', family=font_prop.get_name())  # 한글 폰트 적용
+plt.rcParams['axes.unicode_minus'] = False  # 마이너스 깨짐 방지
+
+# 그래프 제목 및 데이터 시각화
+plt.figure(figsize=(10, 5))  # 그래프 크기 설정
+plt.title('대전광역시 1995년 12월 기온 변화', fontproperties=font_prop)
+plt.plot(range(1, len(df2) + 1), df2['max_temp'], label='최고기온', c='r')
+plt.plot(range(1, len(df2) + 1), df2['avg_temp'], label='평균기온', c='y')
+plt.plot(range(1, len(df2) + 1), df2['min_temp'], label='최저기온', c='b')
+
+# 축 및 범례 설정
+plt.xlabel('일', fontproperties=font_prop)
+plt.ylabel('기온 (℃)', fontproperties=font_prop)
+plt.legend(prop=font_prop)
+plt.grid(True)  # 그리드 추가
+
+# 그래프 표시 및 이미지 저장
+plt.savefig('대전기온.png', dpi=300, bbox_inches='tight')  # 해상도 높이고 여백 제거
+plt.show()
