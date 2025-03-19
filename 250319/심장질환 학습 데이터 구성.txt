@@ -1,0 +1,17 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+
+col_Names = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal', 'label']
+df_heart = pd.read_csv('http://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data' ,names=col_Names)
+
+df_heart.replace('?', np.nan, inplace=True)
+df_heart=df_heart.dropna()
+df_heart
+
+train, test = train_test_split(df_heart, test_size=0.3, random_state=0, 
+stratify=df_heart['label'])
+train_X = train[train.columns[:13]]
+train_Y = train[train.columns[13:]]
+test_X = test[test.columns[:13]]
+test_Y = test[test.columns[13:]]
