@@ -1,0 +1,139 @@
+import sys
+!sudo add-apt-repository ppa:saiarcot895/chromium-beta
+!sudo apt remove chromium-browser
+!sudo snap remove chromium
+!sudo apt install chromium-browser
+!pip3 install selenium
+!apt-get update
+!apt install chromium-chromedriver
+!cp /usr/lib/chromium-browser/chromedriver /usr/bin
+sys.path.insert(0,'/usr/lib/chromium-browser/chromedriver')
+------------------------------------------------------------------------------
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import pandas as pd
+import time
+
+# 크롬 드라이버 설정
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--headless')  # UI 없이 실행
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--disable-dev-shm-usage')
+
+# 웹 드라이버 실행
+driver = webdriver.Chrome(options=chrome_options)
+
+# 네이버 뉴스 IT/과학 섹션 이동
+driver.get("https://news.naver.com/section/105")
+
+# 컬럼 정의
+columns = ['순위', '기사 제목', '분류', '기사 작성일']
+rank = []
+title = []
+journal = []
+date = []
+
+# 최대 뉴스 개수 설정 (50개)
+max_news = 50
+news_count = 0  # 현재 크롤링된 뉴스 개수
+
+while news_count < max_news:
+    for i in range(1, 7):  # ✅ 6개씩 크롤링
+        if news_count >= max_news:
+            break  # 최대 뉴스 개수를 넘으면 종료
+
+        try:
+            # 스크롤 내리기
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(1)  # 스크롤 후 로딩 대기
+
+            # 요소가 로드될 때까지 대기
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, 
+                    f'#newsct > div.section_latest > div > div.section_latest_article._CONTENT_LIST._PERSIST_META > div:nth-child(4) > ul > li:nth-child({i}) > div > div > div.sa_text > a > strong'))
+            )
+
+            # 뉴스 데이터 가져오기
+            title_element = driver.find_element(By.CSS_SELECTOR, 
+                f'#newsct > div.section_latest > div > div.section_latest_article._CONTENT_LIST._PERSIST_META > div:nth-child(4) > ul > li:nth-child({i}) > div > div > div.sa_text > a > strong')
+            journal_element = driver.find_element(By.CSS_SELECTOR, 
+                f'#newsct > div.section_latest > div > div.section_latest_article._CONTENT_LIST._PERSIST_META > div:nth-child(4) > ul > li:nth-child({i}) > div > div > div.sa_text > div.sa_text_info > div.sa_text_info_left > div.sa_text_press')
+            date_element = driver.find_element(By.CSS_SELECTOR, 
+                f'#newsct > div.section_latest > div > div.section_latest_article._CONTENT_LIST._PERSIST_META > div:nth-child(4) > ul > li:nth-child({i}) > div > div > div.sa_text > div.sa_text_info > div.sa_text_info_left > div.sa_text_datetime > b')
+
+            # 리스트에 추가
+            rank.append(news_count + 1)
+            title.append(title_element.text)
+            journal.append(journal_element.text)
+            date.append(date_element.text)
+            news_count += 1  # 크롤링한 뉴스 개수 증가
+
+        except Exception as e:
+            print(f"{news_count+1}번째 뉴스 크롤링 실패: {e}")
+            continue  # 오류 발생 시 다음 뉴스로 넘어감
+
+    # ✅ 6개 크롤링 후 "더보기" 버튼 클릭
+    try:
+        more_button = WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, '#newsct > div.section_latest > div > div.section_more > a'))  # ❗❗ "더보기" 버튼 CSS 선택자 수정 필요
+        )
+        more_button.click()
+        time.sleep(2)  # 클릭 후 로딩 대기
+    except Exception as e:
+        print("더보기 버튼 클릭 실패 또는 더 이상 없음:", e)
+        break  # 더 이상 버튼이 없으면 종료
+
+# 웹 드라이버 종료
+driver.quit()
+
+# 리스트 길이 확인
+print(f"크롤링된 뉴스 개수: {len(title)}")
+
+# 데이터프레임 생성
+df = pd.DataFrame({
+    '순위': rank,
+    '기사 제목': title,
+    '분류': journal,
+    '기사 작성일': date
+})
+
+# 결과 출력
+df.head()
+
+df.to_csv('top50_news.csv', index=False)
+--------------------------------------------------------------------------------------
+!sudo apt-get install -y fonts-nanum
+!sudo fc-cache -fv
+!rm ~/.cache/matplotlib -rf
+--------------------------------------------------------------------------------------
+import csv
+
+with open('top50_news.csv', 'r') as f:
+    rdr = csv.reader(f)
+    title = ''
+    for line in rdr:
+        title = title + ' ' + line[1]  # ✅ 데이터 처리
+        title = title[6:]
+    print(title)
+--------------------------------------------------------------------------------------
+!pip install konlpy
+--------------------------------------------------------------------------------------
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+from collections import Counter
+from konlpy.tag import Okt
+import numpy as np
+
+#문자열 분석하기
+okt = Okt()
+nouns = okt.nouns(title)
+words = [n for n in nouns if len(n) > 1]
+c = Counter(words)
+#워드클라우드 생성하기
+wc = WordCloud(font_path='/usr/share/fonts/truetype/nanum/NanumBarunGothic.ttf',\
+scale=2.0, colormap='Spectral')
+gen = wc.generate_from_frequencies(c)
+plt.figure()
+plt.imshow(gen)
