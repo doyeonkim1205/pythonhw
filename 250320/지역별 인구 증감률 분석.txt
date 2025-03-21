@@ -1,143 +1,66 @@
-from google.colab import files
-uploaded = files.upload()
-------------------------------------------------------
-import pandas as pd
-df = pd.read_csv('경기도_대전.csv', encoding = 'cp949')
------------------------------------------------------
-columns = list(df.columns)
-del columns[1]
-popDiff = []
-
-for i in range(2, len(df)):  
-    row = [df.loc[i][0]]  
-    for j in range(2, len(df.loc[i])):  
-        pop = int(df.loc[i][j]) - int(df.loc[i][j - 1])  
-        row.append(pop)
-
-    popDiff.append(row)
-
-dfPopDiff = pd.DataFrame(popDiff, columns=columns)
-dfPopDiff.to_csv('populationDiff.csv', encoding='cp949')
---------------------------------------------------------------------------------
-columns = list(df.columns)
-del columns[1]
-popIncreaseRate = [ ]
-for i in range(2, len(df)):
-  row = [df.loc[i][0]]
-  for j in range(2 , len(df.loc[i])):
-    pop = float((int(df.loc[i][j])-int(df.loc[i][j-1]))/int(df.loc[i][j-1])) * 100.0
-    row.append(pop)
-  popIncreaseRate.append(row)
-  
-dfPopIncreaseRate = pd.DataFrame(popIncreaseRate, columns=columns)
-dfPopIncreaseRate.to_csv('populationIncreaseRate.csv', encoding='cp949', index=False)
---------------------------------------------------------------------------------
-import pandas as pd
-df = pd.read_csv('populationDiff.csv', encoding='cp949')
-popDiff = [ ]
-for i in range(0, len(df)):
-  popDiff.append(list(df.loc[i]))
---------------------------------------------------------------------------------
-import pandas as pd
-
-# CSV 파일 읽기
-df = pd.read_csv("populationDiff.csv", encoding="cp949")
-
-# 데이터프레임을 리스트로 변환
-popDiff = df.values.tolist()  # 더 간단하고 빠름!
-
-# 확인
-print(popDiff[:5])  # 앞 5개만 출력
----------------------------------------------------------------------------------
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 
-# 한글 폰트 설정
+# 한글 폰트 설정 (한글 깨짐 방지)
 font_path = "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"
 font_prop = fm.FontProperties(fname=font_path)
-plt.rc('font', family='NanumGothic')  # 한글 폰트 적용
-plt.rcParams['axes.unicode_minus'] = False  # 마이너스 깨짐 방지
+plt.rc('font', family='NanumGothic')
+plt.rcParams['axes.unicode_minus'] = False
 
-# 두 번째 헤더 행 건너뛰기: 첫 번째 행은 날짜 헤더, 이후부터 실제 데이터가 시작됩니다.
-df = pd.read_csv('경기도_대전.csv', 
-                 encoding='cp949', skiprows=[1])
+# CSV 파일 읽기: 첫 번째 행은 헤더(연월 정보), 두 번째 행은 건너뛰기
+df = pd.read_csv('경기도_대전.csv', encoding='cp949', skiprows=[1])
 # df의 첫 번째 열은 지역명, 나머지 열은 각 월의 인구수
 print(df.head())
 print("DataFrame shape:", df.shape)
 
-# 열 이름 목록 생성 (필요하다면 특정 열 제거 가능)
+# 원래의 열 이름 목록
 columns = list(df.columns)
-# 예전 코드에서 del columns[1]을 사용한 것은 두 번째 헤더 행에 해당하는 불필요한 열을 제거하기 위함이었는데,
-# skiprows 옵션을 사용하면 이제 필요하지 않습니다.
+# 첫 번째 열은 지역명이므로, 그 이후의 열들(월별 데이터)에 대해 처리
+# 2월 데이터인 열만 선택 (헤더 문자열이 '02'로 끝나는 경우)
+feb_indexes = [i for i in range(1, len(columns)) if columns[i].endswith("02")]
+# x축 레이블: 선택된 2월 열의 헤더(예: '201802', '201902', …)
+x_values = [columns[i] for i in feb_indexes]
 
-# 인구 증감 차이(popDiff) 계산: 각 지역의 첫 번째 열(지역명)은 유지하고,
-# 두 번째 열부터는 이전 달과의 차이를 계산
+# ----- 인구 증감량(popDiff) 계산 -----
+# 각 지역의 인구 증감량은 '전월 대비' 차이를 계산합니다.
+# 첫 번째 열은 지역명이므로, 실제 데이터는 2번째 열부터 시작합니다.
 popDiff = []
-for i in range(len(df)):  # 이제 실제 데이터 행은 0부터 시작
+for i in range(len(df)):  # 각 행: 한 지역
     row = [df.iloc[i, 0]]  # 지역명
-    for j in range(2, len(df.columns)):  # 두 번째 열(인덱스 1)은 시작점으로 사용
+    # 2번째 열부터 마지막 열까지: 각 달의 증감량을 계산 (현재 달 - 바로 이전 달)
+    for j in range(2, len(df.columns)):
         diff = int(df.iloc[i, j]) - int(df.iloc[i, j - 1])
         row.append(diff)
     popDiff.append(row)
 
-# 계산된 데이터 DataFrame으로 저장 및 CSV 내보내기
-dfPopDiff = pd.DataFrame(popDiff, columns=[columns[0]] + columns[2:])
-dfPopDiff.to_csv('populationDiff.csv', encoding='cp949', index=False)
+# popDiff 리스트의 각 행: [지역명, diff for col index 2, diff for col index 3, ...]
+# 주의: popDiff의 첫 계산된 값는 원래 df의 열 인덱스 2에 해당합니다.
+# 따라서, 원본 df의 열 인덱스 i에 대해, popDiff의 값은 popDiff[region][i-1].
 
-# 인구 증가율(popIncreaseRate) 계산
-popIncreaseRate = []
-for i in range(len(df)):
-    row = [df.iloc[i, 0]]
-    for j in range(2, len(df.columns)):
-        prev = int(df.iloc[i, j - 1])
-        # 0으로 나누는 경우 방지
-        if prev == 0:
-            rate = 0.0
-        else:
-            rate = float((int(df.iloc[i, j]) - prev) / prev) * 100.0
-        row.append(rate)
-    popIncreaseRate.append(row)
+# 첫 번째 열은 지역명이므로, 두 번째 열(인덱스 1)은 제외
+# 그리고 2월 데이터 중에서 실제 popDiff 계산에 사용되는 열은 인덱스 2 이상이어야 합니다.
+feb_indexes = [i for i in range(2, len(columns)) if columns[i].endswith("02")]
+x_values = [columns[i] for i in feb_indexes]
 
-dfPopIncreaseRate = pd.DataFrame(popIncreaseRate, columns=[columns[0]] + columns[2:])
-dfPopIncreaseRate.to_csv('populationIncreaseRate.csv', encoding='cp949', index=False)
+# 2월 데이터 추출: popDiff 리스트의 인덱스는 원본 열 인덱스 - 1
+feb_diff_region1 = []
+feb_diff_region2 = []
+for idx in feb_indexes:
+    feb_diff_region1.append(popDiff[0][idx - 1])
+    feb_diff_region2.append(popDiff[1][idx - 1])
 
-print("각 행의 길이:", [len(row) for row in popDiff])
-
-# x축에 표시할 값 (예: 202401 ~ 202406)
-x_values = []
-for i in range(1, 7):
-    yyyymm = '20240' + str(i)
-    x_values.append(yyyymm)
-
-# 데이터의 열 수가 충분한지 확인 후 슬라이싱
-y_region1 = popDiff[0][108:114]
-y_region2 = popDiff[1][108:114]
-
-# 간단한 막대그래프 예제 (두 지역만 표시)
+# ----- 그래프 그리기 -----
 plt.figure(figsize=(10, 6))
 x = np.arange(len(x_values))
 bar_width = 0.35
 
-plt.bar(x, y_region1, bar_width, label=popDiff[0][0])
-plt.bar(x + bar_width, y_region2, bar_width, label=popDiff[1][0])
+plt.bar(x, feb_diff_region1, bar_width, label=popDiff[0][0])
+plt.bar(x + bar_width, feb_diff_region2, bar_width, label=popDiff[1][0])
 
-plt.xlabel('월', fontproperties=font_prop)
+plt.xlabel('년도-월 (2월 데이터)', fontproperties=font_prop)
 plt.ylabel('인구 증감수', fontproperties=font_prop)
 plt.xticks(x + bar_width / 2, x_values)
 plt.legend(prop=font_prop)
 plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
